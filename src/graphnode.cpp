@@ -11,7 +11,7 @@ GraphNode::~GraphNode()
     //// STUDENT CODE
     ////
 
-    delete _chatBot; 
+    //delete _chatBot; // Bugfix: Commented this to prevent de-constructor of Chatbot-Instance gets called twice and trys to delete the image.
 
     ////
     //// EOF STUDENT CODE
