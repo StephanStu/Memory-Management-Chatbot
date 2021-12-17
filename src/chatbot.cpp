@@ -27,26 +27,62 @@ ChatBot::ChatBot(std::string filename)
     _rootNode = nullptr;
 
     // load image into heap memory
-    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+    //_image = new wxBitmap(filename, wxBITMAP_TYPE_PNG); // Using a unique_ptr here:
+  	_image = std::make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
 }
 
 ChatBot::~ChatBot()
 {
     std::cout << "ChatBot Destructor" << std::endl;
     // deallocate heap memory
-    if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
+    /*
+  	if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
         _image = NULL;
     }
+    //This is not needed because we use a unique_ptr to manage the image*/
 }
-
 //// STUDENT CODE
 ////
-
+// COPY ASSIGNMENT OPERARTOR
+ChatBot &ChatBot::operator=(const ChatBot &source){
+  	if (&source != this) {
+    	_image = std::make_unique<wxBitmap>(*source._image);
+    	_currentNode = source._currentNode;
+    	_rootNode = source._rootNode;
+    	_chatLogic = source._chatLogic;
+      	std::cout << "ChatBot Copy Assignement Operator" << std::endl;
+  	}
+  	return *this;
+}
+// COPY CONSTRUCTOR 
+ChatBot::ChatBot(const ChatBot &source) : _image(std::make_unique<wxBitmap>(*source._image)), _currentNode(source._currentNode), _rootNode(source._rootNode), _chatLogic(source._chatLogic){
+  	std::cout << "ChatBot Copy Constructor" << std::endl;
+}
+// MOVE CONSTRUCTOR 
+ChatBot::ChatBot(ChatBot &&source) : _image(std::move(source._image)), _currentNode(source._currentNode), _rootNode(source._rootNode), _chatLogic(source._chatLogic){
+  	source._currentNode = nullptr;
+  	source._rootNode = nullptr;
+  	source._chatLogic = nullptr;
+  	std::cout << "ChatBot Move Constructor" << std::endl;
+}
+// MOVE ASSIGNMENT OPERARTOR
+ChatBot &ChatBot::operator=(ChatBot &&source){
+  	if (&source != this) {
+    	_image = std::move(source._image);
+    	_currentNode = source._currentNode;
+    	source._currentNode = nullptr;
+    	_rootNode = source._rootNode;
+    	source._rootNode = nullptr;
+    	_chatLogic = source._chatLogic;
+    	source._chatLogic = nullptr;
+      	std::cout << "ChatBot Move Assignement Operator" << std::endl;
+  	}
+  	return *this;
+}
 ////
 //// EOF STUDENT CODE
-
 void ChatBot::ReceiveMessageFromUser(std::string message)
 {
     // loop over all edges and keywords and compute Levenshtein distance to query
