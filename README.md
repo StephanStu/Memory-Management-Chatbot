@@ -27,3 +27,17 @@ This section explains how to build & run the application.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./membot`.
+A successful deployment on an Ubuntu-Linux System looks like displayed in the figure below.
+
+<img src="images/chatbot_demo.gif"/>
+
+## Architecture of the Application & Optimizations made to the Original Source Code
+The original cource code of the application can be found [here](https://github.com/udacity/CppND-Memory-Management-Chatbot). Several optimizations have been made to the source code including management of classes on the heap with smart pointers. The architecture of the source code is described in the class diagrams below.
+Diagram one...
+
+
+![ClassDiagram1](images/ClassDiagram1.PNG)
+
+Diagram two describes how...are related
+
+![ClassDiagram2](images/ClassDiagram2.PNG)
