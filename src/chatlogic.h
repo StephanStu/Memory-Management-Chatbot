@@ -20,7 +20,7 @@ private:
     // data handles (owned)
     // std::vector<GraphNode *> _nodes; // ME: Make this a vector of unique_ptr's, s.t. instances of GraphNodes to which the vector elements refer are exclusively owned by the class ChatLogic.
     std::vector<std::unique_ptr<GraphNode>> _nodes;
-    std::vector<GraphEdge *> _edges;
+    // std::vector<GraphEdge *> _edges; //ME: Commented this, edges are exclusive to GraphNode
 
     ////
     //// EOF STUDENT CODE
