@@ -127,6 +127,9 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::mt19937 generator(int(std::time(0)));
     std::uniform_int_distribution<int> dis(0, answers.size() - 1);
     std::string answer = answers.at(dis(generator));
+  
+    // ME: Need to update handle to Chatbot after moving chatBot around
+    _chatLogic->SetChatbotHandle(this); 
 
     // send selected node answer to user
     _chatLogic->SendMessageToUser(answer);

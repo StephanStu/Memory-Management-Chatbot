@@ -90,7 +90,8 @@ void ChatBotFrameImagePanel::paintNow()
 void ChatBotFrameImagePanel::render(wxDC &dc)
 {
     // load backgroud image from file
-    wxString imgFile = imgBasePath + "sf_bridge.jpg";
+    wxString imgFile = imgBasePath + "sf_bridge.jpg"; // ME: Added my own background here.
+    //wxString imgFile = imgBasePath + "Background.jpg";
     wxImage image;
     image.LoadFile(imgFile);
 
@@ -182,7 +183,8 @@ void ChatBotPanelDialog::paintNow()
 void ChatBotPanelDialog::render(wxDC &dc)
 {
     wxImage image;
-    image.LoadFile(imgBasePath + "sf_bridge_inner.jpg");
+    image.LoadFile(imgBasePath + "sf_bridge_inner.jpg"); // ME: Added my own background here.
+    //image.LoadFile(imgBasePath + "Background.jpg");
 
     wxSize sz = this->GetSize();
     wxImage imgSmall = image.Rescale(sz.GetWidth(), sz.GetHeight(), wxIMAGE_QUALITY_HIGH);
@@ -212,5 +214,6 @@ ChatBotPanelDialogItem::ChatBotPanelDialogItem(wxPanel *parent, wxString text, b
     _chatBotTxt->Wrap(150);
 
     // set background color
-    this->SetBackgroundColour((isFromUser == true ? wxT("YELLOW") : wxT("BLUE")));
+    // this->SetBackgroundColour((isFromUser == true ? wxT("YELLOW") : wxT("BLUE"))); // ME: Configured background the way I want it
+    this->SetBackgroundColour((isFromUser == true ? wxT("WHITE") : wxT("BLACK")));  
 }
