@@ -44,8 +44,105 @@ Diagram two describes principle references to the business logic of the applicat
 ## Optimizations made to the Original Source Code
 The original cource code of the application can be found [here](https://github.com/udacity/CppND-Memory-Management-Chatbot). Several optimizations have been made to the source code including management of classes on the heap with smart pointers.
 ### Optimization 1
-In file _chatgui.h/.cpp_ _chatLogic is now an exclusive resource to class ChatbotPanelDialog. A _unique_ptr_ is used to realize the ownership here.
+In file _chatgui.h/.cpp_ chatLogic is now an exclusive resource to class ChatbotPanelDialog. A _unique_ptr_ is used to realize the ownership here.
 ### Optimization 2
+In file _chatbot.h/.cpp_ the class ChatBot now complies with the Rule of Five. It properly allocates / deallocates memory resources on the heap and also copies member data where it makes sense.
 ### Optimization 3
 ### Optimization 4
 ### Optimization 5
+
+## Wrap up of the Rule of Five
+The Rule of Five is especially important in resource management, where unnecessary copying needs to be avoided due to limited resources and performance reasons. The Rule of Five states that if you have to write one of the functions listed below (usually: When you need to write a destructor that frees resources again) then you should consider implementing all of them with a proper resource management policy in place.
+* The destructor: Responsible for freeing the resource once the object it belongs to goes out of scope.
+* The assignment operator: The default assignment operation performs a member-wise shallow copy, which does not copy the content behind the resource handle. If a deep copy is needed, it has be implemented by the programmer.
+* The copy constructor: As with the assignment operator, the default copy constructor performs a shallow copy of the data members. If something else is needed, the programmer has to implement it accordingly.
+* The move constructor: Because copying objects can be an expensive operation which involves creating, copying and destroying temporary objects, rvalue references are used to bind to an rvalue. Using this mechanism, the move constructor transfers the ownership of a resource from a (temporary) rvalue object to a permanent lvalue object.
+* The move assignment operator: With this operator, ownership of a resource can be transferred from one object to another. The internal behavior is very similar to the move constructor.
+
+An example of a class that complies with the rule of five is the following "moveable class":
+
+```cpp
+#include <stdlib.h>
+#include <iostream>
+
+class MyMovableClass
+{
+private:
+    int _size;
+    int *_data;
+
+public:
+    MyMovableClass(size_t size) // constructor
+    {
+        _size = size;
+        _data = new int[_size];
+        std::cout << "CREATING instance of MyMovableClass at " << this << " allocated with size = " << _size*sizeof(int)  << " bytes" << std::endl;
+    }
+    MyMovableClass(MyMovableClass &&source) // 4 : move constructor
+    {
+        std::cout << "MOVING (c’tor) instance " << &source << " to instance " << this << std::endl;
+        _data = source._data;
+        _size = source._size;
+        source._data = nullptr;
+        source._size = 0;
+    }
+    MyMovableClass &operator=(MyMovableClass &&source) // 5 : move assignment operator
+    {
+        std::cout << "MOVING (assign) instance " << &source << " to instance " << this << std::endl;
+        if (this == &source)
+            return *this;
+
+        delete[] _data;
+
+        _data = source._data;
+        _size = source._size;
+
+        source._data = nullptr;
+        source._size = 0;
+
+        return *this;
+    }
+    ~MyMovableClass() // 1 : destructor
+    {
+        std::cout << "DELETING instance of MyMovableClass at " << this << std::endl;
+        delete[] _data;
+    }
+    MyMovableClass(const MyMovableClass &source) // 2 : copy constructor
+    {
+        _size = source._size;
+        _data = new int[_size];
+        *_data = *source._data;
+        std::cout << "COPYING content of instance " << &source << " to instance " << this << std::endl;
+    }
+    MyMovableClass &operator=(const MyMovableClass &source) // 3 : copy assignment operator
+    {
+        std::cout << "ASSIGNING content of instance " << &source << " to instance " << this << std::endl;
+        if (this == &source)
+            return *this;
+        delete[] _data;
+        _data = new int[source._size];
+        *_data = *source._data;
+        _size = source._size;
+        return *this;
+    }
+};
+
+int main()
+{
+    MyMovableClass obj1(10); // regular constructor
+    MyMovableClass obj2(obj1); // copy constructor
+    obj2 = obj1; // copy assignment operator
+    return 0;
+}
+```
+This produces outputs similar to the ones below in the command line after compiling and linking:
+
+CREATING instance of MyMovableClass at 0x7ffc1e837880 allocated with size = 40 bytes
+
+COPYING content of instance 0x7ffc1e837880 to instance 0x7ffc1e837890
+
+ASSIGNING content of instance 0x7ffc1e837880 to instance 0x7ffc1e837890
+
+DELETING instance of MyMovableClass at 0x7ffc1e837890
+
+DELETING instance of MyMovableClass at 0x7ffc1e837880
