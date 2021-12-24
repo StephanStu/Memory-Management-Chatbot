@@ -27,28 +27,26 @@ ChatBot::ChatBot(std::string filename)
     _rootNode = nullptr;
 
     // load image into heap memory
-    //_image = new wxBitmap(filename, wxBITMAP_TYPE_PNG); // Using a unique_ptr here:
-  	_image = std::make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
+    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
 }
 
 ChatBot::~ChatBot()
 {
     std::cout << "ChatBot Destructor" << std::endl;
     // deallocate heap memory
-    /*
   	if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
         _image = NULL;
     }
-    //This is not needed because we use a unique_ptr to manage the image*/
 }
 //// STUDENT CODE
 ////
 // COPY ASSIGNMENT OPERARTOR
 ChatBot &ChatBot::operator=(const ChatBot &source){
-  	if (&source != this) {
-    	_image = std::make_unique<wxBitmap>(*source._image);
+  	if (&source != this){
+      	delete _image;
+    	_image = new wxBitmap(*source._image);
     	_currentNode = source._currentNode;
     	_rootNode = source._rootNode;
     	_chatLogic = source._chatLogic;
@@ -57,12 +55,22 @@ ChatBot &ChatBot::operator=(const ChatBot &source){
   	return *this;
 }
 // COPY CONSTRUCTOR 
-ChatBot::ChatBot(const ChatBot &source) : _image(std::make_unique<wxBitmap>(*source._image)), _currentNode(source._currentNode), _rootNode(source._rootNode), _chatLogic(source._chatLogic){
+ChatBot::ChatBot(const ChatBot &source){
+  	_image = new wxBitmap(*source._image);
+  	_currentNode = source._currentNode;    
+  	_rootNode = source._rootNode;
+  	_chatLogic = source._chatLogic;  
   	std::cout << "ChatBot Copy Constructor" << std::endl;
 }
 // MOVE CONSTRUCTOR 
-ChatBot::ChatBot(ChatBot &&source) : _image(std::move(source._image)), _currentNode(source._currentNode), _rootNode(source._rootNode), _chatLogic(source._chatLogic){
-  	source._currentNode = nullptr;
+ChatBot::ChatBot(ChatBot &&source){
+    _image = source._image;
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    // ME: Invalidate ptr's in source after moving the data from the old to the newly created ChatBot
+    source._image = NULL;
+  	source._currentNode = nullptr;    
   	source._rootNode = nullptr;
   	source._chatLogic = nullptr;
   	std::cout << "ChatBot Move Constructor" << std::endl;
@@ -70,11 +78,17 @@ ChatBot::ChatBot(ChatBot &&source) : _image(std::move(source._image)), _currentN
 // MOVE ASSIGNMENT OPERARTOR
 ChatBot &ChatBot::operator=(ChatBot &&source){
   	if (&source != this) {
-    	_image = std::move(source._image);
+    	// ME: Move the image from the old to the newly created ChatBot
+  	    delete _image;
+        _image = source._image;
+        source._image = NULL;
+         // ME: Move the currentNode from the old to the newly created ChatBot
     	_currentNode = source._currentNode;
     	source._currentNode = nullptr;
+        // ME: Move the rootNode from the old to the newly created ChatBot
     	_rootNode = source._rootNode;
     	source._rootNode = nullptr;
+        // ME: Move the chatLogic from the old to the newly created ChatBot
     	_chatLogic = source._chatLogic;
     	source._chatLogic = nullptr;
       	std::cout << "ChatBot Move Assignement Operator" << std::endl;

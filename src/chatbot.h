@@ -12,7 +12,7 @@ class ChatBot
 {
 private:
     // data handles (owned)
-    std::unique_ptr<wxBitmap> _image; // Made this a unique_ptr instead of an ordinary pointer to _image.
+    wxBitmap *_image; // avatar image
 
     // data handles (not owned)
     GraphNode *_currentNode;
@@ -61,7 +61,7 @@ public:
     void SetRootNode(GraphNode *rootNode) { _rootNode = rootNode; }
     void SetChatLogicHandle(ChatLogic *chatLogic) { _chatLogic = chatLogic; }
     ChatLogic* GetChatLogicHandle() { return _chatLogic; }
-    wxBitmap *GetImageHandle() { return _image.get(); } // Used .get()-method of unique_ptr to return address here.
+    wxBitmap *GetImageHandle() { return _image; }
 
     // communication
     void ReceiveMessageFromUser(std::string message);
