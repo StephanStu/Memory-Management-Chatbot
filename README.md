@@ -31,13 +31,21 @@ This section explains how to build & run the application.
 4. Run it: `./membot`.
 A successful deployment on an Ubuntu-Linux System looks like displayed in the figure above.
 
-## Architecture of the Application & Optimizations made to the Original Source Code
-The original cource code of the application can be found [here](https://github.com/udacity/CppND-Memory-Management-Chatbot). Several optimizations have been made to the source code including management of classes on the heap with smart pointers. The architecture of the source code is described in the class diagrams below.
-Diagram one...
-
+## Architecture of the Application
+The original cource code of the application can be found [here](https://github.com/udacity/CppND-Memory-Management-Chatbot). The architecture of the source code is described in the class diagrams below.
+Diagram one shows _chatgui.h/.cpp_ - which is not a single class but a collection of classes that together realize the graphical user interface.
 
 ![ClassDiagram1](images/ClassDiagram1.PNG)
 
-Diagram two describes how...are related
+Diagram two describes principle references to the business logic of the application contained in _chatogic.h/.cpp_, _graphnode.h/.cpp_, _graphedge.h/.cpp_ and _chatbot.h/.cpp_.
 
 ![ClassDiagram2](images/ClassDiagram2.PNG)
+
+## Optimizations made to the Original Source Code
+The original cource code of the application can be found [here](https://github.com/udacity/CppND-Memory-Management-Chatbot). Several optimizations have been made to the source code including management of classes on the heap with smart pointers.
+### Optimization 1
+In file _chatgui.h/.cpp_ _chatLogic is now an exclusive resource to class ChatbotPanelDialog. A _unique_ptr_ is used to realize the ownership here.
+### Optimization 2
+### Optimization 3
+### Optimization 4
+### Optimization 5
