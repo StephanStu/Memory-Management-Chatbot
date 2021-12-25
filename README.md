@@ -2,6 +2,7 @@
 
 # Memory-Management-Chatbot
 This is my solution for the 3rd project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The goal of this project is to optimize a chatbot-application with respect to memory management on the heap.
+This project was accepted by Udacity's reviewer on 25th of December 2021 (see [here](https://review.udacity.com/#!/reviews/3341202)).
 
 ## Summary
 The ChatBot code creates a dialogue where users can ask questions about some aspects of memory management in C++. After the knowledge base of the chatbot has been loaded from a text file, a knowledge graph representation is created in computer memory, where chatbot answers represent the graph nodes and user queries represent the graph edges. After a user query has been sent to the chatbot, the Levenshtein distance is used to identify the most probable answer.
@@ -48,10 +49,15 @@ In file _chatgui.h/.cpp_ chatLogic is now an exclusive resource to class Chatbot
 ### Optimization 2
 In file _chatbot.h/.cpp_ the class ChatBot now complies with the Rule of Five. It properly allocates / deallocates memory resources on the heap and also copies member data where it makes sense.
 ### Optimization 3
+In file _chatlogic.h/ .cpp_, the instances of GraphNodes are now exclusively owned by the class ChatLogic.
 ### Optimization 4
+In files _chatlogic.h/ .cpp_ and _graphnodes.h/ .cpp_ now each instance of GraphNode exclusively owns the outgoing GraphEdges and holds non-owning references to incoming GraphEdges.
 ### Optimization 5
+In file _chatlogic.cpp_, a local ChatBot instance is now created on the stack at the bottom of function _LoadAnswerGraphFromFile_. Then, move semantics are used to pass the ChatBot instance into the root node; ChatLogic now has no ownership relation to the ChatBot instance and thus is no longer responsible for memory allocation and deallocation.
 
 ## Wrap up of the Rule of Five
+In this section the Rule of Five is wrapped up in brief since it is one of the most important concepts that are applied when refactoring the original source code provided by Udacity.
+
 The Rule of Five is especially important in resource management, where unnecessary copying needs to be avoided due to limited resources and performance reasons. The Rule of Five states that if you have to write one of the functions listed below (usually: When you need to write a destructor that frees resources again) then you should consider implementing all of them with a proper resource management policy in place.
 * The destructor: Responsible for freeing the resource once the object it belongs to goes out of scope.
 * The assignment operator: The default assignment operation performs a member-wise shallow copy, which does not copy the content behind the resource handle. If a deep copy is needed, it has be implemented by the programmer.
@@ -146,3 +152,21 @@ ASSIGNING content of instance 0x7ffc1e837880 to instance 0x7ffc1e837890
 DELETING instance of MyMovableClass at 0x7ffc1e837890
 
 DELETING instance of MyMovableClass at 0x7ffc1e837880
+
+In the project, find similar signatures for the class ChatBot. In _chatbot.h_ find these methods that make ChatBot comply with the rule of five:
+```cpp
+// CONSTRUCTOR WITHOUT MEMORY ALLOCATION
+ChatBot();  
+// CONSTRUCTOR WITHOUT MEMORY ALLOCATION                  
+ChatBot(std::string filename);
+// DESTRUCTOR
+~ChatBot();
+// COPY ASSIGNMENT OPERARTOR
+ChatBot &operator=(const ChatBot &source);
+// COPY CONSTRUCTOR
+ChatBot(const ChatBot &source);
+// MOVE CONSTRUCTOR
+ChatBot(ChatBot &&source);
+// MOVE ASSIGNMENT OPERARTOR
+ChatBot &operator=(ChatBot &&source);
+```
